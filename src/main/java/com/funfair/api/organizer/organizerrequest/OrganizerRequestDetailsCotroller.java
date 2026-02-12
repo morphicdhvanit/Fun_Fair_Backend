@@ -34,7 +34,6 @@ public class OrganizerRequestDetailsCotroller {
 		OrganizerRequestDetails response = organizerService.addOrganizerRequest(addOrganizerRequestDto ,userImagePath );
 		return new ResponseEntity<OrganizerRequestDetails>(response, HttpStatus.OK);	
 		}
-	
 	@GetMapping("/")
 	public ResponseEntity<List<AllOrganizerRequestDto>> getAllOrganizerRequestDetails (){
 		List<AllOrganizerRequestDto> response = organizerService.getAllOrgazerRequestDetails();

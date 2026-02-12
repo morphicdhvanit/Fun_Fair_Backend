@@ -2,7 +2,9 @@ package com.funfair.api.event;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +98,7 @@ public class EventService {
 		LOG.debug("Calculating status for event ID: {}", event.getEventId());
 
 		// 1️⃣ Draft
-		if (Boolean.TRUE.equals(event.getIsEventInDraft())) {
+		if (Boolean.TRUE.equals(event.isEventInDraft())) {
 			LOG.debug("Event ID {} is in DRAFT state", event.getEventId());
 			return EventCurrentStatus.DRAFT.getName();
 		}
@@ -573,8 +575,8 @@ public class EventService {
 	public List<CustomerHomeEventDetailsDto> getThisWeekEventDetailsForCustomer() {
 
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-				.toLocalDate().atTime(23, 59, 59);
+		LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59,
+				59);
 
 		List<EventDetails> events = eventRepository
 				.findByEventStartDateTimeLessThanEqualAndEventEndDateTimeGreaterThanEqual(endOfWeek, now);
@@ -586,7 +588,9 @@ public class EventService {
 
 	public List<CustomerHomeEventDetailsDto> getAllEventDetailsForCustomer() {
 
-		List<EventDetails> events = eventRepository.findAll();
+		List<EventDetails> events =
+			    eventRepository.findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventFalse();
+
 
 		return events.stream().map(this::convertToCustomerHomeDto).toList();
 	}
@@ -608,4 +612,50 @@ public class EventService {
 
 		return dto;
 	}
+
+	public List<CustomerHomeEventDetailsDto> filterEventsByDate(LocalDate startDate, LocalDate endDate) {
+
+		LocalDateTime startDateTime = startDate.atStartOfDay();
+		LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+		List<EventDetails> eventDetails = eventRepository.findByEventStartDateTimeBetween(startDateTime, endDateTime);
+
+		List<CustomerHomeEventDetailsDto> dtos = new ArrayList<>();
+
+		for (EventDetails eventDetail : eventDetails) {
+			dtos.add(convertToCustomerHomeDto(eventDetail));
+		}
+
+		return dtos;
+	}
+
+	public List<CustomerHomeEventDetailsDto> findNearbyEvents(double userLat, double userLon, double radiusKm) {
+
+		List<EventDetails> all = eventRepository.findByIsActiveTrue();
+
+		return all.stream()
+
+				// remove null coordinates
+				.filter(e -> e.getEventLatitude() != null && e.getEventLongitude() != null)
+
+				// distance filter
+				.filter(e -> {
+					double dist = GeoUtil.distanceKm(userLat, userLon, e.getEventLatitude(), e.getEventLongitude());
+					return dist <= radiusKm;
+				})
+
+				.map(this::convertToCustomerHomeDto).toList();
+	}
+
+	public List<CustomerHomeEventDetailsDto> getEventsByCatagory(String catagory) {
+		EventCatagoryEnum catagoryEnum = convertDtoToEntityService.getEventCategory(catagory);
+		List<EventDetails> events = eventRepository.findByEventCatagory(catagoryEnum);
+		List<CustomerHomeEventDetailsDto> eventDtos = new ArrayList<>();
+		for (EventDetails eventDetails : events) {
+			CustomerHomeEventDetailsDto dto = convertToCustomerHomeDto(eventDetails);
+			eventDtos.add(dto);
+		}
+		return eventDtos;
+	}
+
 }

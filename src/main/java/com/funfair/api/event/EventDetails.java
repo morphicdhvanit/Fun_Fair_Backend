@@ -37,6 +37,10 @@ public class EventDetails {
 	private String organizerId;
 	@Column(name = "event_title")
 	private String eventTitle;
+	@Column(name  = "event_latitude")
+	private Double eventLatitude;
+	@Column(name  = "event_longitude")
+	private Double eventLongitude;
 	@Column(name = "event_catagory")
 	@Enumerated(EnumType.STRING)
 	private EventCatagoryEnum eventCatagory;
@@ -92,9 +96,9 @@ public class EventDetails {
 	@Column(name  = "private_event_link")
 	private String privateEventLink;
 	@Column(name  = "is_event_in_draft")
-	private Boolean isEventInDraft;
+	private boolean isEventInDraft;
 	@Column(name  = "is_post_event")
-	private Boolean isPostEvent;
+	private boolean isPostEvent;
 	@Column(name = "created_by")
 	private String createdBy;
 	@Column(name = "created_on")

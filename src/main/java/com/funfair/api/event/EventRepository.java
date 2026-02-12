@@ -1,5 +1,6 @@
 package com.funfair.api.event;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,9 +14,18 @@ public interface EventRepository extends JpaRepository<EventDetails, String> {
 
 	List<EventDetails> findByOrganizerId(String organizerId);
 
-
+	List<EventDetails> findByEventStartDateTimeGreaterThanEqualAndEventEndDateTimeLessThanEqual(LocalDate startDate,
+			LocalDate endDate);
 
 	List<EventDetails> findByEventStartDateTimeLessThanEqualAndEventEndDateTimeGreaterThanEqual(LocalDateTime endOfWeek,
 			LocalDateTime now);
+
+	List<EventDetails> findByEventStartDateTimeBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+	List<EventDetails> findByIsActiveTrue();
+
+	List<EventDetails> findByEventCatagory(EventCatagoryEnum catagoryEnum);
+
+	List<EventDetails> findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventFalse();
 
 }

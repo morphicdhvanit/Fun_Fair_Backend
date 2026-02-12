@@ -16,6 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
 	private String bannerImagePath;
 	@Value("${app.upload.event-gallery-image-path}")
 	private String galleryImagePath;
+	@Value("${app.upload.artists-image-path}")
+	private String artistsImagePath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -30,6 +32,9 @@ public class WebConfig implements WebMvcConfigurer {
         
         registry.addResourceHandler("/gallery-image/**")
         .addResourceLocations("file:" + galleryImagePath);
+        
+        registry.addResourceHandler("/artists-image/**")
+        .addResourceLocations("file:" + artistsImagePath);
  }
     
 }

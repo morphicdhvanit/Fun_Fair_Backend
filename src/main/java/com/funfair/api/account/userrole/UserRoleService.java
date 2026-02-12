@@ -513,7 +513,6 @@ public class UserRoleService {
 		userRole.setCreatedBy(organizer.getOrgUserId());
 		userRole.setCreatedOn(LocalDateTime.now());
 		userRole.setActive(true);
-
 		userRoleRepository.save(userRole);
 	}
 

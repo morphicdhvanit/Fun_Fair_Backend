@@ -1,5 +1,7 @@
 package com.funfair.api.event;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +52,11 @@ public class EventController {
 		EventDetails event = eventService.addBasicInfo(addOrgDetailsRequestDto);
 		return new ResponseEntity<EventDetails>(event, HttpStatus.OK);
 	}
+
 	@PostMapping("/add/post-event/{eventId}")
-	public ResponseEntity<EventDetails> addPostEventDetails(@PathVariable String eventId, @RequestParam Boolean isPostEvent,@RequestParam Boolean isEventInDraft) {
-		EventDetails response = eventService.addPostEventDetails(isPostEvent , isEventInDraft ,eventId);
+	public ResponseEntity<EventDetails> addPostEventDetails(@PathVariable String eventId,
+			@RequestParam Boolean isPostEvent, @RequestParam Boolean isEventInDraft) {
+		EventDetails response = eventService.addPostEventDetails(isPostEvent, isEventInDraft, eventId);
 		return new ResponseEntity<EventDetails>(response, HttpStatus.OK);
 	}
 
@@ -79,11 +83,13 @@ public class EventController {
 		EventDetails response = eventService.addTicketsAndPricing(dto);
 		return new ResponseEntity<EventDetails>(response, HttpStatus.OK);
 	}
+
 	@PostMapping("/add/policies")
 	public ResponseEntity<EventDetails> addEventPolicies(@RequestBody AddEventPoliciesRequestDto dto) {
 		EventDetails response = eventService.addEventPolicies(dto);
 		return new ResponseEntity<EventDetails>(response, HttpStatus.OK);
 	}
+
 	@PostMapping("/add/manage-roles")
 	public ResponseEntity<EventDetails> manageEventRoles(@RequestBody AddManageRoleDetailDto dto) {
 		EventDetails response = eventService.manageEventRoles(dto);
@@ -101,12 +107,13 @@ public class EventController {
 		GetFullEventDetailsDto response = eventService.getEventById(eventId);
 		return new ResponseEntity<GetFullEventDetailsDto>(response, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/org/{organizerId}")
 	public ResponseEntity<List<GetFullEventDetailsDto>> getEventsByOrganizerId(@PathVariable String organizerId) {
 		List<GetFullEventDetailsDto> response = eventService.getEventsByOrganizerId(organizerId);
 		return new ResponseEntity<List<GetFullEventDetailsDto>>(response, HttpStatus.OK);
 	}
+
 	@GetMapping("/customer/home/this-week-events")
 	public ResponseEntity<List<CustomerHomeEventDetailsDto>> getThisWeekEventDetailsForCustomer() {
 		List<CustomerHomeEventDetailsDto> response = eventService.getThisWeekEventDetailsForCustomer();
@@ -116,6 +123,24 @@ public class EventController {
 	@GetMapping("/customer/home/all-events")
 	public ResponseEntity<List<CustomerHomeEventDetailsDto>> getAllEventDetailsForCustomer() {
 		List<CustomerHomeEventDetailsDto> response = eventService.getAllEventDetailsForCustomer();
+		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
+	}
+
+	@PostMapping("/filter/date")
+	public ResponseEntity<List<CustomerHomeEventDetailsDto>> filterEventsByDate(@RequestParam LocalDate StartDate,
+			@RequestParam LocalDate EndDate) {
+		List<CustomerHomeEventDetailsDto> response = eventService.filterEventsByDate(StartDate, EndDate);
+		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
+	}
+
+	@GetMapping("/within-20-km")
+	public ResponseEntity<List<CustomerHomeEventDetailsDto>> nearbyEvents(@RequestParam double lat, @RequestParam double lon) {
+	List<CustomerHomeEventDetailsDto> nearbyEvents = eventService.findNearbyEvents(lat, lon , 20);
+		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(nearbyEvents, HttpStatus.OK);
+	}
+	@GetMapping("/by-catagory")
+	public ResponseEntity<List<CustomerHomeEventDetailsDto>> getEventsByCatagory(@RequestParam String catagory) {
+		List<CustomerHomeEventDetailsDto> response = eventService.getEventsByCatagory(catagory);
 		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
 	}
 }

@@ -99,7 +99,7 @@ public class ConvertDtoToEntityService {
 		return type;
 	}
 
-	private EventCatagoryEnum getEventCategory(String value) {
+	public EventCatagoryEnum getEventCategory(String value) {
 		EventCatagoryEnum category = null;
 
 		if (value.equalsIgnoreCase(EventCatagoryEnum.MUSIC.getName()))
@@ -201,6 +201,8 @@ public class ConvertDtoToEntityService {
 		event.setEventVenueLocaltion(dto.getEventVenueLocaltion());
 		event.setEventAddressLine1(dto.getEventAddressLine1());
 		event.setEventAddressLine2(dto.getEventAddressLine2());
+		event.setEventLatitude(dto.getLatitude());
+		event.setEventLongitude(dto.getLongitude());
 		event.setEventCity(dto.getEventCity());
 		event.setEventState(dto.getEventState());
 		event.setEventType(geteventType(dto.getEventType()));
@@ -211,7 +213,6 @@ public class ConvertDtoToEntityService {
 		event.setEventZipCode(dto.getEventZipCode());
 		event.setGoogleMapLocationLink(dto.getGoogleMapLocationLink());
 	}
-
 	public void convertTicketsAndPricingDetails(AddTicketsAndPricingDetailsDto dto, EventDetails event) {
 		OrganizerDetails organizer = organizerRepository.findByOrgId(event.getOrganizerId());
 		event.setTicketType(getTicketType(dto.getTicketType()));
@@ -227,9 +228,9 @@ public class ConvertDtoToEntityService {
 		
 	}
 
-	public void convertPostEventDetailsDtoToEntity(Boolean isPostEvent, Boolean isEventInDraft, EventDetails event) {
-		event.setIsPostEvent(isPostEvent);
-		event.setIsEventInDraft(isEventInDraft);
+	public void convertPostEventDetailsDtoToEntity(boolean  isPostEvent, boolean  isEventInDraft, EventDetails event) {
+		event.setPostEvent(isPostEvent);
+		event.setEventInDraft(isEventInDraft);
 		event.setUpdatedOn(LocalDateTime.now());
 	}
 

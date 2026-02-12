@@ -19,6 +19,8 @@ public class AddLocationDetailsRequestDto {
 	private String eventAddressLine2;
 	private String eventCity;
 	private String eventState;
+	private Double latitude;
+	private Double longitude;
 	private String eventCountry;
 	private String eventZipCode;
 	private String googleMapLocationLink;
