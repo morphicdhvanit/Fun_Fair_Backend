@@ -1,7 +1,6 @@
 package com.funfair.api.event;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +77,12 @@ public class EventController {
 		return new ResponseEntity<EventDetails>(response, HttpStatus.OK);
 	}
 
+	@GetMapping("/all-catagory")
+	public ResponseEntity<List<EventCategoryDto>> getAllEventCatagory() {
+		List<EventCategoryDto> response = eventService.getAllEventCatagory();
+		return new ResponseEntity<List<EventCategoryDto>>(response, HttpStatus.OK);
+	}
+
 	@PostMapping("/add/tickets-pricing")
 	public ResponseEntity<EventDetails> addTicketsAndPricing(@RequestBody AddTicketsAndPricingDetailsDto dto) {
 		EventDetails response = eventService.addTicketsAndPricing(dto);
@@ -103,7 +108,7 @@ public class EventController {
 	}
 
 	@GetMapping("/{eventId}")
-	public ResponseEntity<GetFullEventDetailsDto> getEventById(String eventId) {
+	public ResponseEntity<GetFullEventDetailsDto> getEventById(@PathVariable String eventId) {
 		GetFullEventDetailsDto response = eventService.getEventById(eventId);
 		return new ResponseEntity<GetFullEventDetailsDto>(response, HttpStatus.OK);
 	}
@@ -134,13 +139,27 @@ public class EventController {
 	}
 
 	@GetMapping("/within-20-km")
-	public ResponseEntity<List<CustomerHomeEventDetailsDto>> nearbyEvents(@RequestParam double lat, @RequestParam double lon) {
-	List<CustomerHomeEventDetailsDto> nearbyEvents = eventService.findNearbyEvents(lat, lon , 20);
+	public ResponseEntity<List<CustomerHomeEventDetailsDto>> nearbyEvents(@RequestParam double lat,
+			@RequestParam double lon) {
+		List<CustomerHomeEventDetailsDto> nearbyEvents = eventService.findNearbyEvents(lat, lon, 20);
 		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(nearbyEvents, HttpStatus.OK);
 	}
+
 	@GetMapping("/by-catagory")
 	public ResponseEntity<List<CustomerHomeEventDetailsDto>> getEventsByCatagory(@RequestParam String catagory) {
 		List<CustomerHomeEventDetailsDto> response = eventService.getEventsByCatagory(catagory);
+		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
+	}
+
+	@GetMapping("/upcoming-events")
+	public ResponseEntity<List<CustomerHomeEventDetailsDto>> upcomingEvents() {
+		List<CustomerHomeEventDetailsDto> response = eventService.upcomingEvents();
+		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
+	}
+
+	@GetMapping("/by-artists-id/{artistsId}")
+	public ResponseEntity<List<CustomerHomeEventDetailsDto>> getEventsByArtistsId(@PathVariable String artistsId) {
+		List<CustomerHomeEventDetailsDto> response = eventService.getEventsByArtistsId(artistsId);
 		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
 	}
 }

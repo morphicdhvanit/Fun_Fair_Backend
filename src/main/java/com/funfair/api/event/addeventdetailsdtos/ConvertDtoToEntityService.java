@@ -16,6 +16,7 @@ import com.funfair.api.event.TicketTypeEnum;
 import com.funfair.api.exception.BadRequestException;
 import com.funfair.api.organizer.OrganizerDetails;
 import com.funfair.api.organizer.OrganizerRepository;
+import com.funfair.api.ticketavailability.AddTicketAvilabilityDetailDto;
 import com.funfair.api.tickettypedetails.TicketTypeService;
 
 @Service
@@ -233,5 +234,6 @@ public class ConvertDtoToEntityService {
 		event.setEventInDraft(isEventInDraft);
 		event.setUpdatedOn(LocalDateTime.now());
 	}
+
 
 }

@@ -36,5 +36,16 @@ public class UserRoleController {
 		return ResponseEntity.ok(response);
 	}
 	
+	@GetMapping("/all-sales-persons-by-event/{eventId}")
+	public ResponseEntity<List<SalesPersonListDto>> getAllSalesPersonsByEvent(String eventId) {
+		List<SalesPersonListDto> response = userRoleService.getAllSalesPersonsByEvent(eventId);
+		return ResponseEntity.ok(response);
+	}
+	@GetMapping("/all-door-manager/{orgId}")
+	public ResponseEntity<List<DorrManagerListDto>> getAllDoorManagers(String orgId) {
+		List<DorrManagerListDto> response = userRoleService.getAllDoorManagers(orgId);
+		return ResponseEntity.ok(response);
+	}
+	
 
 }

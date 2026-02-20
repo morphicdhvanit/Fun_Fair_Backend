@@ -26,6 +26,8 @@ import com.funfair.api.common.ImagePathUrl;
 import com.funfair.api.common.OtpCache;
 import com.funfair.api.common.Util;
 import com.funfair.api.event.EventDetails;
+import com.funfair.api.event.EventRepository;
+import com.funfair.api.event.EventService;
 import com.funfair.api.event.gatenodetails.DoorGateDetailsDto;
 import com.funfair.api.event.gatenodetails.GateNoDetails;
 import com.funfair.api.event.gatenodetails.GateNoDetailsRepository;
@@ -48,6 +50,8 @@ public class UserRoleService {
 	UserRepository userRepository;
 	@Autowired
 	OrganizerRepository organizerRepository;
+	@Autowired
+	EventRepository eventRepository;
 	@Autowired
 	DeviceRepository deviceRepository;
 	@Autowired
@@ -423,6 +427,7 @@ public class UserRoleService {
 
 		VerifyOtpResponseDto response = new VerifyOtpResponseDto();
 		response.setToken(token);
+		System.out.println(user);
 		response.setRoleName(roleType.getName());
 		response.setUserId(user.getUserId());
 
@@ -512,7 +517,6 @@ public class UserRoleService {
 		userRole.setRoleEndDateTime(roleEndDateTime != null ? roleEndDateTime : event.getEventEndDateTime());
 		userRole.setCreatedBy(organizer.getOrgUserId());
 		userRole.setCreatedOn(LocalDateTime.now());
-		userRole.setActive(true);
 		userRoleRepository.save(userRole);
 	}
 
@@ -522,11 +526,44 @@ public class UserRoleService {
 		for (UserRole userRole : userRoles) {
 			SalesPersonListDto dto = new SalesPersonListDto();
 			dto.setSalesPersonId(userRole.getUser().getUserId());
-			dto.setSalesPersonId(userRole.getUser().getUserName());
+			dto.setSalesPersonName(userRole.getUser().getUserName());
 			dto.setSalesPersonPhone(userRole.getUser().getPhoneNo());
 			dto.setSalesPersonEmail(userRole.getUser().getEmailId());
 			dto.setEventId(userRole.getEventId());
 			dto.setOrgId(userRole.getOrgId());
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+	public List<SalesPersonListDto> getAllSalesPersonsByEvent(String eventId) {
+		List<UserRole>  userRoles = userRoleRepository.findByEventIdAndRoleRoleId(eventId, RoleType.SALESPERSON);
+		List<SalesPersonListDto> dtos = new ArrayList<SalesPersonListDto>();
+		for (UserRole userRole : userRoles) {
+			SalesPersonListDto dto = new SalesPersonListDto();
+			dto.setEventId(userRole.getEventId());
+			dto.setOrgId(userRole.getOrgId());
+			dto.setSalesPersonEmail(userRole.getUser().getEmailId());
+			dto.setSalesPersonId(userRole.getUser().getUserId());
+			dto.setSalesPersonName(userRole.getUser().getUserName());
+			dto.setSalesPersonPhone(userRole.getUser().getPhoneNo());
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+	public List<DorrManagerListDto> getAllDoorManagers(String orgId) {
+		List<UserRole>  userRoles = userRoleRepository.findByOrgIdAndRoleRoleId(orgId, RoleType.DOORMANAGER);
+		List<DorrManagerListDto> dtos = new ArrayList<>();
+		for (UserRole userRole : userRoles) {
+			DorrManagerListDto dto = new DorrManagerListDto();
+			dto.setDoorManagerId(userRole.getUser().getUserId());
+			dto.setDoorManagerName(userRole.getUser().getUserName());
+			dto.setDoorManagerEmail(userRole.getUser().getEmailId());
+			dto.setDoorManagerPhone(userRole.getUser().getPhoneNo());
+			dto.setEventId(userRole.getEventId());
+			dto.setOrgId(userRole.getOrgId());
+			dto.setEventName(eventRepository.findByEventId(userRole.getEventId()).getEventTitle());
 			dtos.add(dto);
 		}
 		return dtos;

@@ -71,5 +71,19 @@ public class ArtistsService {
 		dto.setArtistImageUrl(ImagePathUrl.ARTISTS_IMAGE_PATH+ artistsDetails.getArtistImageUrl());
 		return dto;
 	}
+
+	public List<ArtistsDetailsDto> searchArtistsByName(String name) {
+		List<ArtistsDetails> artistsDetails = artistsRespository.findByArtistNameContainingIgnoreCase(name);
+		List<ArtistsDetailsDto> artistsDetailsDtos = new ArrayList<>();
+		for (ArtistsDetails artistsDetail : artistsDetails) {
+			ArtistsDetailsDto dto = new ArtistsDetailsDto();
+			dto.setArtistId(artistsDetail.getArtistId());
+			dto.setArtistName(artistsDetail.getArtistName());
+			dto.setArtistBio(artistsDetail.getArtistBio());
+			dto.setArtistImageUrl(ImagePathUrl.ARTISTS_IMAGE_PATH + artistsDetail.getArtistImageUrl());
+			artistsDetailsDtos.add(dto);
+		}
+		return artistsDetailsDtos;
+	}
    
 }

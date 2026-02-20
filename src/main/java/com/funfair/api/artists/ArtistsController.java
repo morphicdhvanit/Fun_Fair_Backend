@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -27,8 +28,7 @@ public class ArtistsController {
 	private String artistImagePath;
 
 	@PostMapping("/add")
-	public ResponseEntity<ArtistsDetails> addArtistsDetails(
-			@ModelAttribute AddArtistsDetailsRequestDto addArtistsDetailsRequestDto) throws IOException {
+	public ResponseEntity<ArtistsDetails> addArtistsDetails(@ModelAttribute AddArtistsDetailsRequestDto addArtistsDetailsRequestDto) throws IOException {
 		ArtistsDetails artistsDetails = artistsService.addArtistsDetails(addArtistsDetailsRequestDto , artistImagePath);
 		return new ResponseEntity<ArtistsDetails>(artistsDetails, HttpStatus.OK);
 	}
@@ -42,5 +42,11 @@ public class ArtistsController {
 	public ResponseEntity<ArtistsDetailsDto> getArtistsDetailsById(@PathVariable String artistId) {
 		ArtistsDetailsDto response = artistsService.getArtistsDetailsById(artistId);
 		return new ResponseEntity<ArtistsDetailsDto>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<List<ArtistsDetailsDto>> searchArtistsByName(@RequestParam String name) {
+		List<ArtistsDetailsDto> response = artistsService.searchArtistsByName(name);
+		return new ResponseEntity<List<ArtistsDetailsDto>>(response, HttpStatus.OK);
 	}
 }

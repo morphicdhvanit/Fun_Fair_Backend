@@ -20,6 +20,7 @@ import com.funfair.api.account.user.User;
 import com.funfair.api.account.user.UserRepository;
 import com.funfair.api.account.user.UserService;
 import com.funfair.api.account.userrole.UserRoleService;
+import com.funfair.api.common.GeoUtil;
 import com.funfair.api.common.ImagePathUrl;
 import com.funfair.api.common.Util;
 import com.funfair.api.event.addeventdetailsdtos.AddBasicInfoRequestDto;
@@ -30,6 +31,8 @@ import com.funfair.api.event.addeventdetailsdtos.AddManageRoleDetailDto;
 import com.funfair.api.event.addeventdetailsdtos.AddOrgDetailsRequestDto;
 import com.funfair.api.event.addeventdetailsdtos.AddTicketsAndPricingDetailsDto;
 import com.funfair.api.event.addeventdetailsdtos.ConvertDtoToEntityService;
+import com.funfair.api.event.eventartistsdetails.EventArtistsDetails;
+import com.funfair.api.event.eventartistsdetails.EventArtistsRepository;
 import com.funfair.api.event.galleryimages.GalleryImagesDetails;
 import com.funfair.api.event.galleryimages.GalleryImagesRepository;
 import com.funfair.api.event.gatenodetails.AddGateNoDetailsDto;
@@ -40,6 +43,13 @@ import com.funfair.api.exception.BadRequestException;
 import com.funfair.api.organizer.OrganizerDetails;
 import com.funfair.api.organizer.OrganizerRepository;
 import com.funfair.api.organizer.OrganizerService;
+import com.funfair.api.ticketavailability.AddTicketAvilabilityDetailDto;
+import com.funfair.api.ticketavailability.AvilableTicketDetailsDto;
+import com.funfair.api.ticketavailability.TicketAvailabilityService;
+import com.funfair.api.ticketavailability.TicketAvilableDetailsDto;
+import com.funfair.api.ticketavailability.tickettypeacailability.AddTicketTypeAvilabilityDetailsDto;
+import com.funfair.api.tickettypedetails.GetTicketDetailsDto;
+import com.funfair.api.tickettypedetails.TicketTypeDetails;
 import com.funfair.api.tickettypedetails.TicketTypeService;
 
 import jakarta.transaction.Transactional;
@@ -62,6 +72,8 @@ public class EventService {
 	@Autowired
 	GalleryImagesRepository galleryImagesRepository;
 	@Autowired
+	EventArtistsRepository eventArtistsRepository;
+	@Autowired
 	GateNoDetailsService gateNoDetailsService;
 	@Autowired
 	ConvertDtoToEntityService convertDtoToEntityService;
@@ -69,6 +81,8 @@ public class EventService {
 	OrganizerRepository organizerRepository;
 	@Autowired
 	SalespersonTicketService salespersonTicketService;
+	@Autowired
+	TicketAvailabilityService ticketAvailabilityService;
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -330,25 +344,30 @@ public class EventService {
 		LOG.info("Adding basic info for event ID: {}", dto.getEventId());
 
 		if (dto.getEventId() == null || dto.getEventId().isEmpty()) {
-
-			LOG.warn("Event ID is missing while adding basic info");
 			throw new BadRequestException("eventId is required");
 		}
 
 		EventDetails event = eventRepository.findByEventId(dto.getEventId());
 		if (event == null) {
-
-			LOG.warn("Event not found while adding basic info, event ID: {}", dto.getEventId());
 			throw new BadRequestException("Event not found with ID: " + dto.getEventId());
 		}
 
-		// Update basic info
-		LOG.debug("Updating basic info for event ID: {}", dto.getEventId());
 		convertDtoToEntityService.convertBasicInfoDtoToEntity(dto, event);
-
 		eventRepository.save(event);
 
-		LOG.info("Basic info updated successfully for event ID: {}", dto.getEventId());
+		if (dto.getArtistsIds() != null && !dto.getArtistsIds().isEmpty()) {
+			for (String artistId : dto.getArtistsIds()) {
+
+				EventArtistsDetails artistDetails = new EventArtistsDetails();
+				artistDetails.setEventId(dto.getEventId());
+				artistDetails.setArtistId(artistId);
+				artistDetails.setCreatedOn(LocalDateTime.now());
+				artistDetails.setCreatedBy(event.getCreatedBy());
+				eventArtistsRepository.save(artistDetails);
+			}
+		}
+
+		LOG.info("Basic info + artists updated successfully for event ID: {}", dto.getEventId());
 
 		return event;
 	}
@@ -427,10 +446,55 @@ public class EventService {
 		convertDtoToEntityService.convertTicketsAndPricingDetails(dto, event);
 
 		EventDetails savedEvent = eventRepository.save(event);
-
 		LOG.info("Tickets and pricing updated successfully for event ID: {}", dto.getEventId());
 
+		AddTicketAvilabilityDetailDto availabilityDto = convertToAvailabilityDto(dto, event);
+
+		ticketAvailabilityService.addTicketAvailabilityDetails(availabilityDto);
+
 		return savedEvent;
+	}
+
+	private AddTicketAvilabilityDetailDto convertToAvailabilityDto(AddTicketsAndPricingDetailsDto dto,
+			EventDetails event) {
+
+		AddTicketAvilabilityDetailDto availabilityDto = new AddTicketAvilabilityDetailDto();
+
+		availabilityDto.setEventId(event.getEventId());
+
+		availabilityDto.setOrgId(event.getOrganizerId());
+
+		availabilityDto.setCreatedBy(event.getCreatedBy());
+
+		availabilityDto.setBookingPrice(0);
+		int totalTickets = 0;
+
+		List<GetTicketDetailsDto> ticketTypeDetails = ticketTypeService.getTicketsByEventId(event.getEventId());
+
+		List<AddTicketTypeAvilabilityDetailsDto> typeList = new ArrayList<>();
+
+		for (GetTicketDetailsDto ticket : ticketTypeDetails) {
+
+			AddTicketTypeAvilabilityDetailsDto typeDto = new AddTicketTypeAvilabilityDetailsDto();
+
+			typeDto.setTicketTypeId(ticket.getTicketTypeId());
+
+			typeDto.setTicketName(ticket.getTicketName());
+
+			typeDto.setTicketPrice(ticket.getTicketPrice());
+
+			typeDto.setQuntityAvialable(ticket.getQuntityAvialable());
+
+			totalTickets += ticket.getQuntityAvialable();
+
+			typeList.add(typeDto);
+		}
+
+		availabilityDto.setTotalTickets(totalTickets);
+
+		availabilityDto.setTicketTypeAvilabilityDetails(typeList);
+
+		return availabilityDto;
 	}
 
 	public EventDetails addEventPolicies(AddEventPoliciesRequestDto dto) {
@@ -588,9 +652,8 @@ public class EventService {
 
 	public List<CustomerHomeEventDetailsDto> getAllEventDetailsForCustomer() {
 
-		List<EventDetails> events =
-			    eventRepository.findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventFalse();
-
+		List<EventDetails> events = eventRepository
+				.findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventFalse();
 
 		return events.stream().map(this::convertToCustomerHomeDto).toList();
 	}
@@ -642,9 +705,7 @@ public class EventService {
 				.filter(e -> {
 					double dist = GeoUtil.distanceKm(userLat, userLon, e.getEventLatitude(), e.getEventLongitude());
 					return dist <= radiusKm;
-				})
-
-				.map(this::convertToCustomerHomeDto).toList();
+				}).map(this::convertToCustomerHomeDto).toList();
 	}
 
 	public List<CustomerHomeEventDetailsDto> getEventsByCatagory(String catagory) {
@@ -656,6 +717,60 @@ public class EventService {
 			eventDtos.add(dto);
 		}
 		return eventDtos;
+	}
+
+	public List<CustomerHomeEventDetailsDto> getEventsByArtistsId(String artistsId) {
+		List<EventArtistsDetails> eventArtists = eventArtistsRepository.findByArtistId(artistsId);
+		List<CustomerHomeEventDetailsDto> dtos = new ArrayList<>();
+
+		LocalDateTime now = LocalDateTime.now();
+		for (EventArtistsDetails ea : eventArtists) {
+
+			EventDetails event = eventRepository.findByEventIdAndEventEndDateTimeAfter(ea.getEventId(), now);
+			if (event != null) {
+				dtos.add(convertToCustomerHomeDto(event));
+			}
+		}
+		return dtos;
+	}
+
+	public TicketAvilableDetailsDto checkAvailableTickets(String eventId) {
+
+		EventDetails event = eventRepository.findByEventId(eventId);
+		List<AvilableTicketDetailsDto> availableTickets = ticketTypeService.getAvailableTicketsByEventId(eventId);
+		TicketAvilableDetailsDto dto = new TicketAvilableDetailsDto();
+		dto.setEventname(event.getEventTitle());
+		dto.setEventStartDateTime(event.getEventStartDateTime());
+		dto.setEventEndDateTime(event.getEventEndDateTime());
+		dto.setAvailableTicketDetails(availableTickets);
+		dto.setEventLocation(
+				event.getEventVenueLocaltion() + "," + event.getEventAddressLine1() + "," + event.getEventAddressLine2()
+						+ "," + event.getEventCity() + "," + event.getEventState() + "," + event.getEventCountry());
+		return dto;
+	}
+
+	public List<EventCategoryDto> getAllEventCatagory() {
+
+		List<EventCategoryDto> list = new ArrayList<>();
+
+		for (EventCatagoryEnum category : EventCatagoryEnum.values()) {
+
+			EventCategoryDto dto = new EventCategoryDto(category.name(), category.getName());
+
+			list.add(dto);
+		}
+
+		return list;
+	}
+
+	public List<CustomerHomeEventDetailsDto> upcomingEvents() {
+
+		LocalDateTime now = LocalDateTime.now();
+
+		List<EventDetails> upcomingEvents = eventRepository
+				.findByEventStartDateTimeAfterOrderByEventStartDateTimeAsc(now);
+
+		return upcomingEvents.stream().map(this::convertToCustomerHomeDto).toList();
 	}
 
 }

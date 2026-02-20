@@ -1,5 +1,7 @@
 package com.funfair.api.event.addeventdetailsdtos;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +18,6 @@ public class AddBasicInfoRequestDto {
 	private String eventTags;
 	private String eventShortDescription;
 	private String entryAllowFor;
+	private List<String> ArtistsIds;
 	private String ticketNeededFor;
 }

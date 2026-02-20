@@ -2,13 +2,13 @@ package com.funfair.api.event;
 
 public enum EventCatagoryEnum {
 
-	MUSIC("music"),
-	THEATER("theater"),
-	COMEDY("comedy"),
-	FAIRS("fairs"),
-	FESTIVALS("festivals"),
-	CULTURAL("cultural"),
-	RELIGIOUS("religious");
+	MUSIC("Music"),
+	THEATER("Theater"),
+	COMEDY("Comedy"),
+	FAIRS("Fairs"),
+	FESTIVALS("Festivals"),
+	CULTURAL("Cultural"),
+	RELIGIOUS("Religious");
 
 	private final String name;
 

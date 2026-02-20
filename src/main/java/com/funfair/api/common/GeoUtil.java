@@ -1,4 +1,4 @@
-package com.funfair.api.event;
+package com.funfair.api.common;
 
 public class GeoUtil {
 

@@ -11,12 +11,16 @@ import com.funfair.api.common.Util;
 import com.funfair.api.event.EventDetails;
 import com.funfair.api.exception.BadRequestException;
 import com.funfair.api.organizer.OrganizerDetails;
+import com.funfair.api.ticketavailability.AvilableTicketDetailsDto;
+import com.funfair.api.ticketavailability.TicketAvailabilityRepository;
 
 @Service
 public class TicketTypeService {
 
 	@Autowired
 	TicketTypeDetailsRepository ticketTypeDetailsRepository;
+	@Autowired
+	TicketAvailabilityRepository ticketAvailabilityRepository;
 	@Autowired
 	Util util;
 
@@ -75,6 +79,7 @@ public class TicketTypeService {
 			dto.setQuntityAvialable(ticketTypeDetails.getQuntityAvialable());
 			dto.setTicketName(ticketTypeDetails.getTicketName());
 			dto.setTicketDec(ticketTypeDetails.getTicketDec());
+			dto.setQuntitySold(0);
 			dtos.add(dto);
 		}
 		return dtos;
@@ -118,6 +123,23 @@ public class TicketTypeService {
 	    }
 
 	    return lowestPrice;
+	}
+
+	public List<AvilableTicketDetailsDto> getAvailableTicketsByEventId(String eventId) {
+		
+		List<TicketTypeDetails>  ticketTypeDetails = ticketTypeDetailsRepository.findByEventId(eventId);
+		List<AvilableTicketDetailsDto> dtos = new ArrayList<AvilableTicketDetailsDto>();
+		for (TicketTypeDetails ticket : ticketTypeDetails) {
+            if(ticket.getQuntityAvialable() > 0) {
+                AvilableTicketDetailsDto dto = new AvilableTicketDetailsDto();
+                dto.setTicketTypeId(ticket.getTicketTypeId());
+                dto.setTicketName(ticket.getTicketName());
+                dto.setTicketPrice(ticket.getTicketPrice());
+                dto.setQuntityAvialable(ticket.getQuntityAvialable());
+                dtos.add(dto);
+            }
+        }
+		return dtos;
 	}
 
 

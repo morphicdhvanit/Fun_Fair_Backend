@@ -8,15 +8,26 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
 public class Util {
     
 	@Value("${user.phone.number.length}")
 	private int length;
+	
+	@Autowired
+	private S3Client s3Client;
+
+	@Value("${do.spaces.bucket}")
+	private String bucketName;
 	
 	
 	public String getIdFromName(String name) {
@@ -72,42 +83,62 @@ public class Util {
 		return valid;
 	}
 	
-	public String saveFile(MultipartFile file, String uploadDir) throws IOException {
-		System.out.println("path"+uploadDir);
-	    if (file == null || file.isEmpty()) return null;
+	public String saveFile(MultipartFile file, String folder) throws IOException {
 
-	    String originalFilename = Path.of(file.getOriginalFilename()).getFileName().toString(); // avoid path traversal
-	    String fileName = System.currentTimeMillis() + "_" + originalFilename;
-	    Path uploadPath = Paths.get(uploadDir);
+		 if (file == null || file.isEmpty())
+		  return null;
 
-	    if (!Files.exists(uploadPath)) {
-	        Files.createDirectories(uploadPath);
-	    }
+		 String originalFilename =
+		  Path.of(file.getOriginalFilename())
+		  .getFileName()
+		  .toString();
 
-	    Path filePath = uploadPath.resolve(fileName);
-	    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+		 String fileName =
+		  System.currentTimeMillis() + "_" + originalFilename;
 
-	    return fileName;  // return relative file name (you can also return full path)
-	}
+		 String key = folder + "/" + fileName;
+
+
+		 PutObjectRequest putObjectRequest =
+		  PutObjectRequest.builder()
+		   .bucket(bucketName)
+		   .key(key)
+		   .acl("public-read")
+		   .contentType(file.getContentType())
+		   .build();
+
+
+		 s3Client.putObject(
+		  putObjectRequest,
+		  RequestBody.fromInputStream(
+		   file.getInputStream(),
+		   file.getSize()));
+
+
+		 return fileName;
+		}
 	
-	public boolean deleteFile(String uploadDir, String fileName) {
+	public boolean deleteFile(String folder, String fileName) {
 
-	    if (fileName == null || fileName.isEmpty()) {
-	        return false;
-	    }
+		 try {
 
-	    try {
-	        Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+		  String key = folder + "/" + fileName;
 
-	        File file = filePath.toFile();
-	        if (file.exists()) {
-	            return file.delete(); // true if deleted
-	        }
+		  DeleteObjectRequest request =
+		   DeleteObjectRequest.builder()
+		    .bucket(bucketName)
+		    .key(key)
+		    .build();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		  s3Client.deleteObject(request);
 
-	    return false;
-	}
+		  return true;
+
+		 } catch (Exception e) {
+
+		  e.printStackTrace();
+		 }
+
+		 return false;
+		}
 }

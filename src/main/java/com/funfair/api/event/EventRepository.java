@@ -25,7 +25,11 @@ public interface EventRepository extends JpaRepository<EventDetails, String> {
 	List<EventDetails> findByIsActiveTrue();
 
 	List<EventDetails> findByEventCatagory(EventCatagoryEnum catagoryEnum);
-
+ 
 	List<EventDetails> findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventFalse();
+
+	EventDetails findByEventIdAndEventEndDateTimeAfter(String eventId, LocalDateTime now);
+
+	List<EventDetails> findByEventStartDateTimeAfterOrderByEventStartDateTimeAsc(LocalDateTime now);
 
 }

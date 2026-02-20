@@ -1,4 +1,4 @@
-package com.funfair.api.tickettypedetails;
+package com.funfair.api.ticketavailability.tickettypeacailability;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,16 +7,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetTicketDetailsDto {
+
+public class AddTicketTypeAvilabilityDetailsDto {
 	
 	
 	private String ticketName;
-	private String eventId;
-	private String 	TicketTypeId;
+	private String ticketTypeId;
 	private double ticketPrice;
 	private int quntityAvialable;
-	private int quntitySold;
-	private String orgId;
-	private String ticketDec;
+
 
 }
