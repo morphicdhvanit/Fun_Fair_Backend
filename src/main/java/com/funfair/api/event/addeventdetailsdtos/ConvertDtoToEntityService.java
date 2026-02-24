@@ -215,7 +215,9 @@ public class ConvertDtoToEntityService {
 		event.setGoogleMapLocationLink(dto.getGoogleMapLocationLink());
 	}
 	public void convertTicketsAndPricingDetails(AddTicketsAndPricingDetailsDto dto, EventDetails event) {
+		System.out.println("event"+event);
 		OrganizerDetails organizer = organizerRepository.findByOrgId(event.getOrganizerId());
+		System.out.println("organizer "+organizer);
 		event.setTicketType(getTicketType(dto.getTicketType()));
 		event.setSalseStartDateTime(dto.getSalesStartDateAndTime());
 		event.setSalseEndDateTime(dto.getSalesEndDateAndTime());

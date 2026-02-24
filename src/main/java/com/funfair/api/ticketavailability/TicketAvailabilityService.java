@@ -12,8 +12,8 @@ import com.funfair.api.event.EventRepository;
 import com.funfair.api.event.addeventdetailsdtos.AddTicketsAndPricingDetailsDto;
 import com.funfair.api.exception.BadRequestException;
 import com.funfair.api.ticketavailability.tickettypeacailability.AddTicketTypeAvilabilityDetailsDto;
-import com.funfair.api.ticketavailability.tickettypeacailability.TicketTypeAcailabilityDetails;
-import com.funfair.api.ticketavailability.tickettypeacailability.TickettypeAcailabilityRepository;
+import com.funfair.api.ticketavailability.tickettypeacailability.TicketTypeAvilabilityDetails;
+import com.funfair.api.ticketavailability.tickettypeacailability.TickettypeAvilabilityRepository;
 import com.funfair.api.tickettypedetails.AddTicketTypeDetailsDto;
 import com.funfair.api.tickettypedetails.TicketTypeAddDetailsDto;
 import com.funfair.api.tickettypedetails.TicketTypeDetails;
@@ -26,7 +26,7 @@ public class TicketAvailabilityService {
 	@Autowired
 	TicketAvailabilityRepository ticketAvailabilityRepository;
 	@Autowired
-	TickettypeAcailabilityRepository tickettypeAcailabilityRepository;
+	TickettypeAvilabilityRepository tickettypeAvilabilityRepository;
 	@Autowired
 	EventRepository eventRepository;
 
@@ -49,9 +49,9 @@ public class TicketAvailabilityService {
 	}
 
 	private List<AvilableTicketDetailsDto> getTicketTypeDetails(String eventId) {
-		List<TicketTypeAcailabilityDetails> ticketTypeDetails = tickettypeAcailabilityRepository.findByEventId(eventId);
+		List<TicketTypeAvilabilityDetails> ticketTypeDetails = tickettypeAvilabilityRepository.findByEventId(eventId);
 		List<AvilableTicketDetailsDto> dtos = new ArrayList<>();
-		for (TicketTypeAcailabilityDetails TicketTypeAcailabilityDetails : ticketTypeDetails) {
+		for (TicketTypeAvilabilityDetails TicketTypeAcailabilityDetails : ticketTypeDetails) {
 			AvilableTicketDetailsDto dto = new AvilableTicketDetailsDto();
 			dto.setQuntityAvialable(TicketTypeAcailabilityDetails.getTotalAvailableTicket()
 					- TicketTypeAcailabilityDetails.getTotalFreezedTicket());
@@ -92,7 +92,7 @@ public class TicketAvailabilityService {
 
 		for (AddTicketTypeAvilabilityDetailsDto typeDto : dto.getTicketTypeAvilabilityDetails()) {
 
-			TicketTypeAcailabilityDetails type = new TicketTypeAcailabilityDetails();
+			TicketTypeAvilabilityDetails type = new TicketTypeAvilabilityDetails();
 
 			type.setEventId(dto.getEventId());
 
@@ -114,7 +114,7 @@ public class TicketAvailabilityService {
 
 			type.setCreatedOn(LocalDateTime.now());
 
-			tickettypeAcailabilityRepository.save(type);
+			tickettypeAvilabilityRepository.save(type);
 
 		}
 

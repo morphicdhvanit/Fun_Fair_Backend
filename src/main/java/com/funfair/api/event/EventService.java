@@ -653,7 +653,7 @@ public class EventService {
 	public List<CustomerHomeEventDetailsDto> getAllEventDetailsForCustomer() {
 
 		List<EventDetails> events = eventRepository
-				.findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventFalse();
+				.findByIsActiveTrueAndIsPrivateEventFalseAndIsEventInDraftFalseAndIsPostEventTrue();
 
 		return events.stream().map(this::convertToCustomerHomeDto).toList();
 	}
@@ -661,17 +661,36 @@ public class EventService {
 	private CustomerHomeEventDetailsDto convertToCustomerHomeDto(EventDetails eventDetails) {
 
 		CustomerHomeEventDetailsDto dto = new CustomerHomeEventDetailsDto();
+
 		dto.setEventId(eventDetails.getEventId());
 		dto.setEventName(eventDetails.getEventTitle());
+
 		Double eventPrice = ticketTypeService.getLowestTicketPriceByEventId(eventDetails.getEventId());
 		dto.setEventprice(eventPrice);
+
 		dto.setEventStartDateTime(
 				eventDetails.getEventStartDateTime() != null ? eventDetails.getEventStartDateTime().toString() : null);
+
 		dto.setEventEndDateTime(
 				eventDetails.getEventEndDateTime() != null ? eventDetails.getEventEndDateTime().toString() : null);
+
 		dto.setEventAddressLine1(eventDetails.getEventAddressLine1());
 		dto.setEventAddressLine2(eventDetails.getEventAddressLine2());
-		dto.setThumbnailImageUrl(ImagePathUrl.THUMBNAIL_IMAGE_PATH + eventDetails.getThumbnailImageUrl());
+		
+		// ✅ Get Gallery Image instead of Thumbnail
+		List<GalleryImagesDetails> galleryImages = galleryImagesRepository
+				.findByEventIdAndIsActiveTrueOrderByIdAsc(eventDetails.getEventId());
+
+		if (galleryImages != null && !galleryImages.isEmpty()) {
+
+			dto.setThumbnailImageUrl(ImagePathUrl.GALLERY_IMAGE_PATH + galleryImages.get(0).getImageUrl());
+
+		} else {
+
+			// fallback to thumbnail if no gallery image
+			dto.setThumbnailImageUrl(ImagePathUrl.THUMBNAIL_IMAGE_PATH + eventDetails.getThumbnailImageUrl());
+
+		}
 
 		return dto;
 	}

@@ -46,6 +46,12 @@ public class ArtistsService {
 	}
 
 	public List<ArtistsDetailsDto> getAllArtistsDetails() {
+
+	    try {
+	        Thread.sleep(10000);
+	    } catch (InterruptedException e) {
+	        e.printStackTrace();
+	    }
 		List<ArtistsDetails> artistsDetails = artistsRespository.findAll();
 		List<ArtistsDetailsDto> artistsDetailsDtos = new ArrayList<>();
 		for (ArtistsDetails artistsDetail : artistsDetails) {

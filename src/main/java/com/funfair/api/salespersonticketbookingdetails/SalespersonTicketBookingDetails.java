@@ -1,10 +1,11 @@
-package com.funfair.api.salespersonticketdetails.salespersonbookingtickettypedetails;
+package com.funfair.api.salespersonticketbookingdetails;
 
 import java.time.LocalDateTime;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,8 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name  = "salesperson_booking_ticket_type_details")
-public class SalespersonBookingTicketTypeDetails {
+@Table(name  = "salesperson_ticket_booking_details")
+public class SalespersonTicketBookingDetails {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,17 +31,10 @@ public class SalespersonBookingTicketTypeDetails {
 	private String eventId;
 	@Column(name  = "organizer_id", nullable = false)
 	private String organizerId;
+	@Column(name  = "total_payment_amount")
+	private double totalPaymentAmount;
 	@Column(name = "ticket_number", unique = true)
 	private String ticketNumber;
-	@Column(name  = "ticket_type_id")
-	private String ticketTypeId;
-	@Column(name  = "ticket_quantity")
-	private int ticketQuantity;
-	@Column(name  = "one_ticket_price")
-	private double oneTicketPrice;
-	
-	@Column(name  = "total_ticket_price")
-	private double totalTicketPrice;
 	
 	@Column(name = "created_by")
 	private String createdBy;
@@ -52,6 +46,5 @@ public class SalespersonBookingTicketTypeDetails {
 	private LocalDateTime updatedOn;
 	@Column(name = "is_active")
 	private boolean isActive = true;
-
 
 }

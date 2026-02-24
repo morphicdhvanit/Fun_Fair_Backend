@@ -60,6 +60,7 @@ public class TicketTypeService {
 			ticket.setTicketDec(dto.getTicketDec());
 			ticket.setTicketPrice(dto.getTicketPrice());
 			ticket.setEventId(event.getEventId());
+			System.out.println(organizer.getOrgId());
 			ticket.setOrgId(organizer.getOrgId());
 			ticket.setCreatedBy(organizer.getOrgUserId());
 			ticket.setCreatedOn(LocalDateTime.now());

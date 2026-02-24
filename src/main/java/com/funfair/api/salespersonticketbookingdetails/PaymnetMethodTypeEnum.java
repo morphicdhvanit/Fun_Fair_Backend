@@ -1,4 +1,4 @@
-package com.funfair.api.salespersonticketdetails;
+package com.funfair.api.salespersonticketbookingdetails;
 
 public enum PaymnetMethodTypeEnum {
 

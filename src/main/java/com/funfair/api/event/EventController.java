@@ -131,7 +131,7 @@ public class EventController {
 		return new ResponseEntity<List<CustomerHomeEventDetailsDto>>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/filter/date")
+	@GetMapping("/filter/date")
 	public ResponseEntity<List<CustomerHomeEventDetailsDto>> filterEventsByDate(@RequestParam LocalDate StartDate,
 			@RequestParam LocalDate EndDate) {
 		List<CustomerHomeEventDetailsDto> response = eventService.filterEventsByDate(StartDate, EndDate);

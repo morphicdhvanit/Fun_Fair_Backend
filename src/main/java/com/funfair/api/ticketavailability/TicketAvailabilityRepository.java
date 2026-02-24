@@ -8,4 +8,6 @@ public interface TicketAvailabilityRepository extends JpaRepository<TicketAvaila
 
 	TicketAvailabilityDetails findByEventId(String eventId);
 
+	TicketAvailabilityDetails findByEventIdAndOrgId(String eventId, String organizerId);
+
 }

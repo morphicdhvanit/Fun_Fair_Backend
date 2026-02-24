@@ -10,4 +10,6 @@ public interface GalleryImagesRepository extends JpaRepository<GalleryImagesDeta
 
 	List<GalleryImagesDetails> findByEventId(String eventId);
 
+	List<GalleryImagesDetails> findByEventIdAndIsActiveTrueOrderByIdAsc(String eventId);
+
 }

@@ -1,6 +1,9 @@
-package com.funfair.api.salespersonticketdetails;
+package com.funfair.api.bookingticketdetails;
 
 import java.time.LocalDateTime;
+
+import com.funfair.api.salespersonticketbookingdetails.PaymnetMethodTypeEnum;
+import com.funfair.api.salespersonticketbookingdetails.TicketStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,44 +21,44 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name  = "salesperson_ticket_booking_details")
-public class SalespersonTicketBookingDetails {
-	
+@Table(name = "booking_ticket_details")
+public class BookingTicketDetails {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
+
+	@Column(name = "ticket_number", unique = true)
+	private String ticketNumber;
+	@Column(name = "ticket_qr_token", unique = true, nullable = false, length = 100)
+	private String ticketQrToken;
 	@Column(name = "salesperson_id", nullable = false)
 	private String salespersonId;
 	@Column(name = "event_id", nullable = false)
 	private String eventId;
-	@Column(name  = "organizer_id", nullable = false)
+	@Column(name = "organizer_id", nullable = false)
 	private String organizerId;
-	@Column(name  = "buyer_name")
-	private String buyerName;
-	@Column(name  = "buyer_phone_number")
-	private String buyerPhoneNumber;
-	@Column(name  = "ticket_qr_token", unique = true, nullable = false, length = 100)
-	private String ticketQrToken;
-	@Column(name  = "payment_method")
+	@Column(name = "customer_id")
+	private String customerId;
+	@Column(name = "payment_method")
 	@Enumerated(EnumType.STRING)
 	private PaymnetMethodTypeEnum paymentMethod;
-	@Column(name  = "total_payment_amount")
+	@Column(name = "total_payment_amount")
 	private double totalPaymentAmount;
 	@Column(name = "is_ticket_used")
 	private boolean isTicketUsed = false;
-	@Column(name = "ticket_number", unique = true)
-	private String ticketNumber;
 	@Column(name = "ticket_used_on")
 	private LocalDateTime ticketUsedOn;
 	@Column(name = "total_quantity")
 	private int Totalquantity;
-	@Column(name  = "ticket_status")
+	@Column(name = "ticket_status")
 	@Enumerated(EnumType.STRING)
 	private TicketStatus ticketStatus;
-	@Column(name  = "is_payment_successful")
+	@Column(name = "is_payment_successful")
 	private boolean isPaymentSuccessful = false;
-	
+	@Column(name = "is_ticket_assign_by_salesperson")
+	private boolean isTicketAssignBySalesPerson = false;
+
 	@Column(name = "created_by")
 	private String createdBy;
 	@Column(name = "created_on")

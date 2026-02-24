@@ -15,7 +15,9 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .servers(List.of(
-                        new Server().url("http://localhost:8080/")
+                		  new Server().url("https://b5b6-103-85-11-148.ngrok-free.app").description("Local Server"),
+                          new Server().url("https://b5b6-103-85-11-148.ngrok-free.app").description("Production Server")
+
                 ));
     }
 }

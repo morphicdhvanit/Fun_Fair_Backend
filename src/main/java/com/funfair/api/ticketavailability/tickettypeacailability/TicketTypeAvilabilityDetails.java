@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "ticket_type_avilability_details")
-public class TicketTypeAcailabilityDetails {
+public class TicketTypeAvilabilityDetails {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
