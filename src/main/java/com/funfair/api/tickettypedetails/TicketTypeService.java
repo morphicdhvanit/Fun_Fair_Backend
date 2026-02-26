@@ -12,6 +12,7 @@ import com.funfair.api.event.EventDetails;
 import com.funfair.api.exception.BadRequestException;
 import com.funfair.api.organizer.OrganizerDetails;
 import com.funfair.api.ticketavailability.AvilableTicketDetailsDto;
+import com.funfair.api.ticketavailability.TicketAvailabilityDetails;
 import com.funfair.api.ticketavailability.TicketAvailabilityRepository;
 
 @Service
@@ -40,6 +41,7 @@ public class TicketTypeService {
 		dto.setEventId(ticketTypeDetails.getEventId());
 		dto.setOrgId(ticketTypeDetails.getOrgId());
 		dto.setQuntityAvialable(ticketTypeDetails.getQuntityAvialable());
+		dto.setTicketTypePrice(ticketTypeDetails.getTicketPrice());
 		dto.setTicketDec(ticketTypeDetails.getTicketDec());
 		dto.setTicketName(ticketTypeDetails.getTicketName());
 		dto.setTickettypeId(ticketTypeDetails.getTicketTypeId());
@@ -80,10 +82,36 @@ public class TicketTypeService {
 			dto.setQuntityAvialable(ticketTypeDetails.getQuntityAvialable());
 			dto.setTicketName(ticketTypeDetails.getTicketName());
 			dto.setTicketDec(ticketTypeDetails.getTicketDec());
-			dto.setQuntitySold(0);
+			dto.setQuntitySold(getticketAvailabilityDetails(ticketTypeDetails.getEventId()).getSoldTickets()+ getticketAvailabilityDetails(ticketTypeDetails.getEventId()).getFreezedTickets());
+			String status = calculateTicketStatus(ticketTypeDetails.getQuntityAvialable(), dto.getQuntitySold());
+			dto.setCurrentStatus(status);
 			dtos.add(dto);
 		}
 		return dtos;
+	}
+
+	private String calculateTicketStatus(int available, int sold) {
+
+		if (available == 0) {
+			return "Sold Out";
+		}
+
+		if (sold >= available) {
+			return "Sold Out";
+		}
+
+		double percentage = (sold * 100.0) / available;
+
+		if (percentage >= 50) {
+			return "Fast Filling";
+		}
+
+		return "Tickets Available";
+	}
+
+	private TicketAvailabilityDetails getticketAvailabilityDetails(String eventId) {
+		TicketAvailabilityDetails ticketAvailabilityDetails = ticketAvailabilityRepository.findByEventId(eventId);
+		return ticketAvailabilityDetails;
 	}
 
 	public List<TicketTypeAddDetailsDto> getTicketTypesByEventId(String eventId) {
@@ -108,40 +136,38 @@ public class TicketTypeService {
 	public double getLowestTicketPriceByEventId(String eventId) {
 		System.out.println("Fetching lowest ticket price for event ID: " + eventId);
 
-	    List<TicketTypeDetails> tickets =
-	            ticketTypeDetailsRepository.findByEventIdAndIsActiveTrue(eventId);
+		List<TicketTypeDetails> tickets = ticketTypeDetailsRepository.findByEventIdAndIsActiveTrue(eventId);
 
-	    if (tickets == null || tickets.isEmpty()) {
-	        return 0.0;
-	    }
+		if (tickets == null || tickets.isEmpty()) {
+			return 0.0;
+		}
 
-	    double lowestPrice = tickets.get(0).getTicketPrice();
+		double lowestPrice = tickets.get(0).getTicketPrice();
 
-	    for (TicketTypeDetails ticket : tickets) {
-	        if (ticket.getTicketPrice() < lowestPrice) {
-	            lowestPrice = ticket.getTicketPrice();
-	        }
-	    }
+		for (TicketTypeDetails ticket : tickets) {
+			if (ticket.getTicketPrice() < lowestPrice) {
+				lowestPrice = ticket.getTicketPrice();
+			}
+		}
 
-	    return lowestPrice;
+		return lowestPrice;
 	}
 
 	public List<AvilableTicketDetailsDto> getAvailableTicketsByEventId(String eventId) {
-		
-		List<TicketTypeDetails>  ticketTypeDetails = ticketTypeDetailsRepository.findByEventId(eventId);
+
+		List<TicketTypeDetails> ticketTypeDetails = ticketTypeDetailsRepository.findByEventId(eventId);
 		List<AvilableTicketDetailsDto> dtos = new ArrayList<AvilableTicketDetailsDto>();
 		for (TicketTypeDetails ticket : ticketTypeDetails) {
-            if(ticket.getQuntityAvialable() > 0) {
-                AvilableTicketDetailsDto dto = new AvilableTicketDetailsDto();
-                dto.setTicketTypeId(ticket.getTicketTypeId());
-                dto.setTicketName(ticket.getTicketName());
-                dto.setTicketPrice(ticket.getTicketPrice());
-                dto.setQuntityAvialable(ticket.getQuntityAvialable());
-                dtos.add(dto);
-            }
-        }
+			if (ticket.getQuntityAvialable() > 0) {
+				AvilableTicketDetailsDto dto = new AvilableTicketDetailsDto();
+				dto.setTicketTypeId(ticket.getTicketTypeId());
+				dto.setTicketName(ticket.getTicketName());
+				dto.setTicketPrice(ticket.getTicketPrice());
+				dto.setQuntityAvialable(ticket.getQuntityAvialable());
+				dtos.add(dto);
+			}
+		}
 		return dtos;
 	}
-
 
 }

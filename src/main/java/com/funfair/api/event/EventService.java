@@ -2,6 +2,7 @@ package com.funfair.api.event;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -160,13 +161,21 @@ public class EventService {
 		dto.setEventCatagory(event.getEventCatagory().getName());
 		dto.setEventTags(event.getEventTags());
 		dto.setEventShortDescription(event.getEventShortDescription());
-		dto.setEntryAllowFor(event.getEntryAllowFor().getName());
-		dto.setTicketNeededFor(event.getTicketNeededFor().getName());
+		dto.setEntryAllowFor(event.getEntryAllowFor().getDisplayName());
+		dto.setTicketNeededFor(event.getTicketNeededFor().getDisplayName());
 		dto.setEventStartDateTime(event.getEventStartDateTime());
 		dto.setEventEndDateTime(event.getEventEndDateTime());
 
 		dto.setEventBannerImageUrl(ImagePathUrl.BANNER_IMAGE_PATH + event.getEventBannerImageUrl());
 		dto.setEventThumbnailImageUrl(ImagePathUrl.THUMBNAIL_IMAGE_PATH + event.getThumbnailImageUrl());
+		
+		
+		    dto.setEventDuration(
+		    	    calculateEventDurationByTime(
+		    	        event.getEventStartDateTime(),
+		    	        event.getEventEndDateTime()
+		    	    )
+		    	);
 
 		// Gallery images
 		List<GalleryImagesDetails> galleryImages = galleryImagesRepository.findByEventId(event.getEventId());
@@ -216,6 +225,36 @@ public class EventService {
 
 		return dto;
 	}
+	
+	private String calculateEventDurationByTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+
+	    if (startDateTime == null || endDateTime == null)
+	        return null;
+
+	    LocalTime startTime = startDateTime.toLocalTime();
+	    LocalTime endTime = endDateTime.toLocalTime();
+
+	    Duration duration;
+
+	    // Handles overnight events (example 8 PM to 12 AM)
+	    if (endTime.isBefore(startTime)) {
+	        duration = Duration.between(startTime, endTime.plusHours(24));
+	    } else {
+	        duration = Duration.between(startTime, endTime);
+	    }
+
+	    long hours = duration.toHours();
+	    long minutes = duration.toMinutes() % 60;
+
+	    if (hours > 0 && minutes > 0)
+	        return hours + " hours " + minutes + " minutes";
+
+	    if (hours > 0)
+	        return hours + " hours";
+
+	    return minutes + " minutes";
+	}
+
 
 	public GetFullEventDetailsDto getEventById(String eventId) {
 
@@ -293,7 +332,6 @@ public class EventService {
 						gallery.setImageUrl(fileName);
 						gallery.setCreatedBy("system");
 						gallery.setCreatedOn(LocalDateTime.now());
-						gallery.setActive(true);
 
 						newImages.add(gallery);
 

@@ -13,6 +13,7 @@ public class TicketTypeAddDetailsDto {
 	private int quntityAvialable;
 	private String ticketDec;
 	private String tickettypeId;
+	private double ticketTypePrice;
 	private String orgId;
 	private String eventId;
 }

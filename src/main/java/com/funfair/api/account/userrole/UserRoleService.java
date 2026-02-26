@@ -344,6 +344,7 @@ public class UserRoleService {
 
 	    User user = new User();
 	    user.setPhoneNo(dto.getPhoneNumber());
+	    user.setCountryCode(dto.getCountryCode());
 	    user.setCreatedOn(LocalDateTime.now());
 	    return userRepository.save(user);
 	}

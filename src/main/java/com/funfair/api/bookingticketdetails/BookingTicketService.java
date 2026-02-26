@@ -90,38 +90,6 @@ public class BookingTicketService {
 		return savedTicket;
 	}
 
-	// =========================================================
-	// SAVE TYPE DETAILS
-	// =========================================================
-
-//	public void saveTicketTypeDetails(BookTicketDetailsDto dto, String ticketNumber) {
-//
-//		for (BookingTicketTypeDetailsDto typeDto : dto.getBookTicketDetailsDtos()) {
-//
-//			BookingTicketTypeDetails type = new BookingTicketTypeDetails();
-//
-//			type.setTicketNumber(ticketNumber);
-//
-//			type.setEventId(dto.getEventId());
-//
-//			type.setOrganizerId(dto.getOrganizerId());
-//
-//			type.setTicketTypeId(typeDto.getTicketTypeId());
-//
-//			type.setTicketQuantity(typeDto.getTicketQuantity());
-//
-//			type.setOneTicketPrice(typeDto.getOneTicketPrice());
-//
-//			type.setTotalTicketPrice(typeDto.getTicketQuantity() * typeDto.getOneTicketPrice());
-//
-//			type.setCreatedBy(dto.getCreatedBy());
-//
-//			type.setCreatedOn(LocalDateTime.now());
-//
-//			bookingTicketTypeRepository.save(type);
-//
-//		}
-//	}
 	public void saveTicketTypeDetails(BookTicketDetailsDto dto, String ticketNumber) {
 
 		for (BookingTicketTypeDetailsDto typeDto : dto.getBookTicketDetailsDtos()) {

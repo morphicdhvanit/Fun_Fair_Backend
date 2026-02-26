@@ -2,18 +2,24 @@ package com.funfair.api.event;
 
 public enum EventAgeGroupEnum {
 	
-	ALL_AGES("all_ages"),
-	FIVE_PLUS("five_plus"),
-	EIGHTEEN_PLUS("eighteen_plus"),
-	SENIOR_CITIZEN("senior_citizen");
-	
-	private final String name;
+    ALL_AGES("all_ages", "All Age Groups"),
+    FIVE_PLUS("five_plus", "5+ Years"),
+    EIGHTEEN_PLUS("eighteen_plus", "18+ Years"),
+    SENIOR_CITIZEN("senior_citizen", "Senior Citizen");
 
-	EventAgeGroupEnum(String name) {
-		this.name = name;
-	}
+    private final String name;
+    private final String displayName;
 
-	public String getName() {
-		return this.name;
-	}
+    EventAgeGroupEnum(String name, String displayName) {
+        this.name = name;
+        this.displayName = displayName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }

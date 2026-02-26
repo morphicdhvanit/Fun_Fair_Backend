@@ -11,7 +11,7 @@ public class SendOtpMasterDto {
 
 	private String phoneNumber;
 	private String roleName;
-
+	private String countryCode;
 	private String deviceId;
 	private String deviceToken;
 	private String deviceType;

@@ -27,6 +27,8 @@ public class User {
 	private String userName;
 	@Column(name  = "user_image")
 	private String userImage;
+	@Column(name  = "country_code")
+	private String countryCode;
 	@Column(name = "phone_no")
 	private String phoneNo;
 	@Column(name = "email_id", unique = true)

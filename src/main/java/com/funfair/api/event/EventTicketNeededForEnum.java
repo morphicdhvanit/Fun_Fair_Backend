@@ -1,22 +1,24 @@
 package com.funfair.api.event;
 
-
 public enum EventTicketNeededForEnum {
 
-	ALL("all"),
-	FIVE_PLUS("5_plus"),
-	TEN_PLUS("10_plus"),
-	EIGHTEEN_PLUS("18_plus");
+	ALL("all", "All Age Groups"), FIVE_PLUS("5_plus", "5+ Years"), TEN_PLUS("10_plus", "10+ Years"),
+	EIGHTEEN_PLUS("18_plus", "18+ Years");
 
 	private final String name;
+	private String displayName;
 
-	EventTicketNeededForEnum(String name) {
+	EventTicketNeededForEnum(String name, String displayName) {
 		this.name = name;
+		this.displayName = displayName;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 	
+    public String getDisplayName() {
+        return displayName;
+    }
 
 }

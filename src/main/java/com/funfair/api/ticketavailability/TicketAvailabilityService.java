@@ -120,4 +120,66 @@ public class TicketAvailabilityService {
 
 	}
 
+	public CheckoutDetailsDto checkoutDetails(String eventId, String ticketTypeId, int quantity) {
+
+	    // Validate quantity
+	    if (quantity <= 0) {
+	        throw new BadRequestException("Invalid ticket quantity");
+	    }
+
+	    // Fetch ticket type details
+	    TicketTypeAvilabilityDetails ticketTypeDetails =
+	            tickettypeAvilabilityRepository.findByEventIdAndTicketTypeId(eventId, ticketTypeId);
+
+	    if (ticketTypeDetails == null) {
+	        throw new BadRequestException("Ticket type not found");
+	    }
+
+	    // ✅ Availability check
+	    if (quantity > ticketTypeDetails.getTotalAvailableTicket()) {
+
+	        throw new RuntimeException(
+	                "Requested quantity not available. Only "
+	                        + ticketTypeDetails.getTotalAvailableTicket()
+	                        + " tickets left."
+	        );
+	    }
+
+	    // Fetch booking fee
+	    TicketAvailabilityDetails availabilityDetails =
+	            ticketAvailabilityRepository.findByEventId(eventId);
+
+	    if (availabilityDetails == null) {
+	        throw new RuntimeException("Ticket availability not found");
+	    }
+
+	    double oneTicketPrice = ticketTypeDetails.getTicketPrice();
+
+	    // subtotal
+	    double subTotal = oneTicketPrice * quantity;
+
+	    // booking fee (per ticket × quantity)
+	    double bookingFee = availabilityDetails.getBookingPrice();
+
+	    double discount = 0;
+
+	    // total amount
+	    double totalAmount = subTotal + bookingFee - discount;
+
+	    // Prepare DTO
+	    CheckoutDetailsDto dto = new CheckoutDetailsDto();
+	    dto.setEventId(eventId);
+	    dto.setTicketTypeId(ticketTypeId);
+	    dto.setQuantity(quantity);
+	    dto.setOneticketPrice(oneTicketPrice);
+	    dto.setSubTotal(subTotal);
+	    dto.setBookingFee(bookingFee);
+	    dto.setDiscount(discount);
+	    dto.setTotalAmount(totalAmount);
+
+	    return dto;
+	}
+
+
+
 }

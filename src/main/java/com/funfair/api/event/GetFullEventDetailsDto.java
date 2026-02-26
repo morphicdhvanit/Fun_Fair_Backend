@@ -48,6 +48,7 @@ public class GetFullEventDetailsDto {
 	private LocalDateTime salseEndDateTime;
 	private String eventTermAndConditions;
 	private Boolean isPrivateEvent;
+	private String eventDuration;
 	private String privateEventLink;
 	private List<GetDoorManagerDetailsDto> doorManagerDetails;
 	private List<GetSalsePersonDetailsDto> salesPersonDetails;

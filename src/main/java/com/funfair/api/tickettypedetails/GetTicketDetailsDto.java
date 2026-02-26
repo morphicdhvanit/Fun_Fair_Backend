@@ -15,6 +15,7 @@ public class GetTicketDetailsDto {
 	private String 	TicketTypeId;
 	private double ticketPrice;
 	private int quntityAvialable;
+	private String currentStatus;
 	private int quntitySold;
 	private String orgId;
 	private String ticketDec;

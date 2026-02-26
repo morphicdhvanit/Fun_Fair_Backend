@@ -24,7 +24,7 @@ public class OrganizerRequestDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int Id;
-	@Column(name  = "organizer_request_id")
+	@Column(name  = "organizer_request_id", unique = true)
 	private String organizerRequestId;
 	@Column(name = "organizer_name")
 	private String organizerName;

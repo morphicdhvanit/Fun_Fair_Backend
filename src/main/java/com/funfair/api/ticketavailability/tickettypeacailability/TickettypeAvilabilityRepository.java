@@ -13,4 +13,6 @@ public interface TickettypeAvilabilityRepository extends JpaRepository<TicketTyp
 
 	List<TicketTypeAvilabilityDetails> findByEventIdAndIsActiveTrue(String eventId);
 
+	TicketTypeAvilabilityDetails findByEventIdAndTicketTypeId(String eventId, String ticketTypeId);
+
 }

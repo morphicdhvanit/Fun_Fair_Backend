@@ -21,12 +21,6 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
-	
-    @PostMapping("/resend-otp/{phoneNumber}")
-    public ResponseEntity<UserLoginDto> reSendOtp(@PathVariable String phoneNumber) {
-        UserLoginDto response = userService.reSendOtp(phoneNumber);
-        return new ResponseEntity<UserLoginDto>(response, HttpStatus.OK);
-    }
     @GetMapping("/")
     public ResponseEntity<List<UserDetailsDto>> getAllUser(){
     	List<UserDetailsDto> response  = userService.getAllUser();

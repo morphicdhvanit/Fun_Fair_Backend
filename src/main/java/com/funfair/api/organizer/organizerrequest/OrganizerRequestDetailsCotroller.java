@@ -50,7 +50,6 @@ public class OrganizerRequestDetailsCotroller {
 		return new ResponseEntity<OrganizerRequestDetails>(response, HttpStatus.OK);
 	}
 	
-	
 }
 
 
